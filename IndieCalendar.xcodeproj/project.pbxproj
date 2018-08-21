@@ -7,14 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4042B1F93251C60572FA39E2 /* Pods_IndieCalendar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D99AAA2C2CFE087FB3E8275F /* Pods_IndieCalendar.framework */; };
+		A1F4F77E212714AB002FC0F2 /* CheckInCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F4F77D212714AB002FC0F2 /* CheckInCalendar.swift */; };
 		A1FE40AF21252CE8001060C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40AE21252CE8001060C6 /* AppDelegate.swift */; };
 		A1FE40B121252CE8001060C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40B021252CE8001060C6 /* ViewController.swift */; };
 		A1FE40B421252CE8001060C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1FE40B221252CE8001060C6 /* Main.storyboard */; };
 		A1FE40B621252CE9001060C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1FE40B521252CE9001060C6 /* Assets.xcassets */; };
 		A1FE40B921252CE9001060C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1FE40B721252CE9001060C6 /* LaunchScreen.storyboard */; };
+		A1FE40D02125C0F9001060C6 /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40CD2125C0F9001060C6 /* CalendarView.swift */; };
+		A1FE40D32125F2FB001060C6 /* CalendarCellStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D22125F2FB001060C6 /* CalendarCellStyle.swift */; };
+		A1FE40D52125FC56001060C6 /* CalendarStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D42125FC56001060C6 /* CalendarStyle.swift */; };
+		A1FE40D721260143001060C6 /* UnavailabilityCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D621260143001060C6 /* UnavailabilityCalendar.swift */; };
+		A1FE40D921262D6D001060C6 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D821262D6D001060C6 /* Date+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		07FD8C24A88B32E102642041 /* Pods-IndieCalendar.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IndieCalendar.debug.xcconfig"; path = "Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar.debug.xcconfig"; sourceTree = "<group>"; };
+		A1F4F77D212714AB002FC0F2 /* CheckInCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckInCalendar.swift; sourceTree = "<group>"; };
 		A1FE40AB21252CE8001060C6 /* IndieCalendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IndieCalendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1FE40AE21252CE8001060C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A1FE40B021252CE8001060C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +31,13 @@
 		A1FE40B521252CE9001060C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1FE40B821252CE9001060C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A1FE40BA21252CE9001060C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1FE40CD2125C0F9001060C6 /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
+		A1FE40D22125F2FB001060C6 /* CalendarCellStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCellStyle.swift; sourceTree = "<group>"; };
+		A1FE40D42125FC56001060C6 /* CalendarStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStyle.swift; sourceTree = "<group>"; };
+		A1FE40D621260143001060C6 /* UnavailabilityCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnavailabilityCalendar.swift; sourceTree = "<group>"; };
+		A1FE40D821262D6D001060C6 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		AC5047DE5EA85088A012DC35 /* Pods-IndieCalendar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IndieCalendar.release.xcconfig"; path = "Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar.release.xcconfig"; sourceTree = "<group>"; };
+		D99AAA2C2CFE087FB3E8275F /* Pods_IndieCalendar.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IndieCalendar.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +45,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4042B1F93251C60572FA39E2 /* Pods_IndieCalendar.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		87B4EC3BA9076E108E8CE6F6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D99AAA2C2CFE087FB3E8275F /* Pods_IndieCalendar.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A1FE40A221252CE8001060C6 = {
 			isa = PBXGroup;
 			children = (
 				A1FE40AD21252CE8001060C6 /* IndieCalendar */,
 				A1FE40AC21252CE8001060C6 /* Products */,
+				CDC5DDCC1D9F2F1AF5A9CC20 /* Pods */,
+				87B4EC3BA9076E108E8CE6F6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,7 +81,10 @@
 		A1FE40AD21252CE8001060C6 /* IndieCalendar */ = {
 			isa = PBXGroup;
 			children = (
+				A1FE40C22125344F001060C6 /* Support */,
 				A1FE40AE21252CE8001060C6 /* AppDelegate.swift */,
+				A1FE40D621260143001060C6 /* UnavailabilityCalendar.swift */,
+				A1F4F77D212714AB002FC0F2 /* CheckInCalendar.swift */,
 				A1FE40B021252CE8001060C6 /* ViewController.swift */,
 				A1FE40B221252CE8001060C6 /* Main.storyboard */,
 				A1FE40B521252CE9001060C6 /* Assets.xcassets */,
@@ -64,6 +94,34 @@
 			path = IndieCalendar;
 			sourceTree = "<group>";
 		};
+		A1FE40C22125344F001060C6 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				A1FE40D12125F2D5001060C6 /* Styles */,
+				A1FE40CD2125C0F9001060C6 /* CalendarView.swift */,
+				A1FE40D821262D6D001060C6 /* Date+Extensions.swift */,
+			);
+			path = Support;
+			sourceTree = "<group>";
+		};
+		A1FE40D12125F2D5001060C6 /* Styles */ = {
+			isa = PBXGroup;
+			children = (
+				A1FE40D22125F2FB001060C6 /* CalendarCellStyle.swift */,
+				A1FE40D42125FC56001060C6 /* CalendarStyle.swift */,
+			);
+			path = Styles;
+			sourceTree = "<group>";
+		};
+		CDC5DDCC1D9F2F1AF5A9CC20 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				07FD8C24A88B32E102642041 /* Pods-IndieCalendar.debug.xcconfig */,
+				AC5047DE5EA85088A012DC35 /* Pods-IndieCalendar.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -71,9 +129,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A1FE40BD21252CE9001060C6 /* Build configuration list for PBXNativeTarget "IndieCalendar" */;
 			buildPhases = (
+				72F3C78C530AC6B3216D80F1 /* [CP] Check Pods Manifest.lock */,
 				A1FE40A721252CE8001060C6 /* Sources */,
 				A1FE40A821252CE8001060C6 /* Frameworks */,
 				A1FE40A921252CE8001060C6 /* Resources */,
+				478C2E6813A1393EE1CB6609 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -130,13 +190,60 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		478C2E6813A1393EE1CB6609 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/JTAppleCalendar/JTAppleCalendar.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JTAppleCalendar.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		72F3C78C530AC6B3216D80F1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-IndieCalendar-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A1FE40A721252CE8001060C6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1FE40D52125FC56001060C6 /* CalendarStyle.swift in Sources */,
+				A1FE40D921262D6D001060C6 /* Date+Extensions.swift in Sources */,
+				A1FE40D721260143001060C6 /* UnavailabilityCalendar.swift in Sources */,
+				A1FE40D02125C0F9001060C6 /* CalendarView.swift in Sources */,
 				A1FE40B121252CE8001060C6 /* ViewController.swift in Sources */,
 				A1FE40AF21252CE8001060C6 /* AppDelegate.swift in Sources */,
+				A1F4F77E212714AB002FC0F2 /* CheckInCalendar.swift in Sources */,
+				A1FE40D32125F2FB001060C6 /* CalendarCellStyle.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +385,7 @@
 		};
 		A1FE40BE21252CE9001060C6 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 07FD8C24A88B32E102642041 /* Pods-IndieCalendar.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -296,6 +404,7 @@
 		};
 		A1FE40BF21252CE9001060C6 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = AC5047DE5EA85088A012DC35 /* Pods-IndieCalendar.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

@@ -1,9 +1,19 @@
-//
-//  Date+Extensions.swift
-//  IndieCalendar
-//
-//  Created by Vinicius Romani on 16/08/18.
-//  Copyright © 2018 Vinicius Romani. All rights reserved.
-//
-
 import Foundation
+
+extension Date {
+    func isSameDay(of date: Date) -> Bool {
+        return Calendar.current.compare(self, to: date, toGranularity: .day) == .orderedSame
+    }
+    
+    func isAfter(date: Date) -> Bool {
+        return Calendar.current.compare(self, to: date, toGranularity: .day) == .orderedDescending
+    }
+    
+    func isBefore(date: Date) -> Bool {
+        return Calendar.current.compare(self, to: date, toGranularity: .day) == .orderedAscending
+    }
+    
+    func isInBetween(beginDate: Date, endDate: Date) -> Bool {
+        return isAfter(date: beginDate) && isBefore(date: endDate)
+    }
+}

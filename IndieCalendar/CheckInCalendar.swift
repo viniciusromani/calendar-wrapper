@@ -5,7 +5,7 @@ class CheckInCalendar: UIView {
     
     // View
     private let info = UILabel()
-    private let calendar = CalendarView(numberOfRows: 6)
+    private let calendar = CalendarView(numberOfRows: 6, cellStyles: .checkIn)
     
     // Init
     init() {
@@ -40,7 +40,7 @@ class CheckInCalendar: UIView {
         self.info.font = UIFont.systemFont(ofSize: 16)
         self.info.textColor = UIColor(red: 77 / 255, green: 77 / 255, blue: 77 / 255, alpha: 1)
         self.info.textAlignment = .center
-        self.info.text = "Em quais dias seu carro estará indisponível?"
+        self.info.text = "Check In Calendar"
     }
     
     private func addConstraintsToSubviews() {
