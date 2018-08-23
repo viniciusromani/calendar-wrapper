@@ -8,4 +8,5 @@ target 'IndieCalendar' do
   # Pods for IndieCalendar
   pod 'JTAppleCalendar', '~> 7.0'
     pod 'SnapKit', '~> 4.0.0'
+    pod 'SwiftDate', '~> 5.0.4'
 end

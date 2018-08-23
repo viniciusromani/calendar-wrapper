@@ -11,6 +11,8 @@ import JTAppleCalendar
 
 class ViewController: UIViewController {
     
+    private var unavailabilityCalendar: UnavailabilityCalendar!
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
@@ -31,7 +33,25 @@ class ViewController: UIViewController {
     
     override func loadView() {
         let calendar = UnavailabilityCalendar()
+        
+        calendar.leftArrow.addTarget(self, action: #selector(onLeftArrow), for: .touchUpInside)
+        calendar.rightArrow.addTarget(self, action: #selector(onRightArrow), for: .touchUpInside)
+        calendar.selectMonth.addTarget(self, action: #selector(onSelectMonth), for: .touchUpInside)
+        
+        self.unavailabilityCalendar = calendar
+        
         self.view = calendar
     }
+    
+    @objc func onLeftArrow() {
+        self.unavailabilityCalendar.goToPreviousMonth()
+    }
+    
+    @objc func onRightArrow() {
+        self.unavailabilityCalendar.goToNextMonth()
+    }
+    
+    @objc func onSelectMonth() {
+        print("select month")
+    }
 }
-

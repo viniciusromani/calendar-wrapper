@@ -16,4 +16,8 @@ extension Date {
     func isInBetween(beginDate: Date, endDate: Date) -> Bool {
         return isAfter(date: beginDate) && isBefore(date: endDate)
     }
+    
+    func getMonth() -> Int {
+        return Calendar.current.component(.month, from: self)
+    }
 }
