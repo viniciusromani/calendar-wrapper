@@ -81,10 +81,6 @@ class CalendarCell: JTAppleCell {
         self.dayNumber.backgroundColor = style.backgroundColor
         self.dayNumber.attributedText = NSAttributedString(string: self.dayNumber.text ?? "", attributes: style.textAttributes)
         self.defaultBackgroundColor = style.backgroundColor
-        
-        self.dayNumber.snp.makeConstraints { make in
-            make.width.height.equalTo(style.height - 5)
-        }
     }
     
     func removeStyle() {
