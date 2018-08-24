@@ -61,6 +61,7 @@ class UnavailabilityCalendar: UIView {
         self.month.font = UIFont.systemFont(ofSize: 20)
         self.month.textColor = UIColor(red: 77 / 255, green: 77 / 255, blue: 77 / 255, alpha: 1)
         self.month.textAlignment = .center
+        self.month.text = Date().monthName(.default) + " \(Date().year)"
         
         self.info.font = UIFont.systemFont(ofSize: 14)
         self.info.textColor = UIColor(red: 77 / 255, green: 77 / 255, blue: 77 / 255, alpha: 1)
