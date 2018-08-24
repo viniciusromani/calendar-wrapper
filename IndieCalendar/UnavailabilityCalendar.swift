@@ -15,8 +15,6 @@ class UnavailabilityCalendar: UIView {
     private let calendar = CalendarView(numberOfRows: 6, cellStyles: .unavailability)
     let selectMonth = UIButton(type: .custom)
     
-    private let monthFormatter = DateFormatter()
-    
     // Init
     init() {
         super.init(frame: CGRect.zero)
@@ -53,8 +51,6 @@ class UnavailabilityCalendar: UIView {
     private func formatViews() {
         self.backgroundColor = UIColor(red: 250 / 255, green: 251 / 255, blue: 252 / 255, alpha: 1)
         
-        self.monthFormatter.dateFormat = "LLLL"
-        
         self.leftArrow.setImage(UIImage(named: "seta")!, for: .normal)
         self.leftArrow.tintColor = UIColor(red: 16 / 255, green: 163 / 255, blue: 163 / 255, alpha: 1)
         
@@ -65,7 +61,6 @@ class UnavailabilityCalendar: UIView {
         self.month.font = UIFont.systemFont(ofSize: 20)
         self.month.textColor = UIColor(red: 77 / 255, green: 77 / 255, blue: 77 / 255, alpha: 1)
         self.month.textAlignment = .center
-        self.month.text = "Junho 2018"
         
         self.info.font = UIFont.systemFont(ofSize: 14)
         self.info.textColor = UIColor(red: 77 / 255, green: 77 / 255, blue: 77 / 255, alpha: 1)
@@ -136,7 +131,14 @@ class UnavailabilityCalendar: UIView {
         }
         
         let nextMonthDate = firstDate + 1.months
-        self.month.text = self.monthFormatter.string(from: nextMonthDate)
+        let endCalendarDate = self.calendar.endCalendarDate
+        
+        guard nextMonthDate.isMonthBefore(date: endCalendarDate) ||
+              nextMonthDate.isSameMonth(of: endCalendarDate) else {
+            return
+        }
+        
+        self.month.text = nextMonthDate.monthName(.default) + " \(nextMonthDate.year)"
     }
     
     func goToPreviousMonth() {
@@ -147,6 +149,13 @@ class UnavailabilityCalendar: UIView {
         }
         
         let previousMonthDate = firstDate - 1.months
-        self.month.text = self.monthFormatter.string(from: previousMonthDate)
+        let beginCalendarDate = self.calendar.beginCalendarDate
+        
+        guard previousMonthDate.isMonthAfter(date: beginCalendarDate) ||
+              previousMonthDate.isSameMonth(of: beginCalendarDate) else {
+            return
+        }
+        
+        self.month.text = previousMonthDate.monthName(.default) + " \(previousMonthDate.year)"
     }
 }

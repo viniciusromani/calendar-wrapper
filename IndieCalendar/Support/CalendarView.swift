@@ -1,4 +1,5 @@
 import SnapKit
+import SwiftDate
 import JTAppleCalendar
 
 enum CalendarCellSelectionMode {
@@ -107,6 +108,9 @@ class CalendarView: UIView {
     
     let calendarView = JTAppleCalendarView()
     
+    var beginCalendarDate: Date
+    var endCalendarDate: Date
+    
     // control variables
     private let cellStyles: CalendarCellStyleType
     private let numberOfRows: Int
@@ -122,9 +126,11 @@ class CalendarView: UIView {
         }
     }
     
-    init(numberOfRows: Int, cellStyles: CalendarCellStyleType) {
+    init(numberOfRows: Int, cellStyles: CalendarCellStyleType, beginCalendarDate: Date = Date(), endCalendarDate: Date = Date() + 1.years) {
         self.numberOfRows = numberOfRows
         self.cellStyles = cellStyles
+        self.beginCalendarDate = beginCalendarDate
+        self.endCalendarDate = endCalendarDate
         super.init(frame: .zero)
         self.buildView()
     }
@@ -173,14 +179,9 @@ class CalendarView: UIView {
 
 extension CalendarView: JTAppleCalendarViewDataSource {
     func configureCalendar(_ calendar: JTAppleCalendarView) -> ConfigurationParameters {
-        let firstDate = Date()
-        let components = DateComponents(year: 1)
-        let secondDate = Calendar.current.date(byAdding: components, to: firstDate) ?? firstDate.addingTimeInterval(60 * 60 * 24 * 365)
-        //TODO: Look for a Swifty calendar API
         
-        //TODO: Check inDate and outDate
-        let configuration = ConfigurationParameters(startDate: firstDate,
-                                                    endDate: secondDate,
+        let configuration = ConfigurationParameters(startDate: self.beginCalendarDate,
+                                                    endDate: self.endCalendarDate,
                                                     numberOfRows: self.numberOfRows,
                                                     calendar: Calendar(identifier: .gregorian),
                                                     generateInDates: .forAllMonths,
@@ -199,7 +200,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
         
         switch cellState.dateBelongsTo {
         case .thisMonth:
-            let isAfterToday = date.isSameDay(of: Date()) || date.isAfter(date: Date())
+            let isAfterToday = date.isSameDay(of: Date()) || date.isDayAfter(date: Date())
             let style: CalendarCellStyle = isAfterToday ?
                 self.cellStyles.enabledStyle:
                 self.cellStyles.disabledStyle
@@ -253,7 +254,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
                 return .begin(cellStyle: self.cellStyles.selectionStyle)
             } else if date.isSameDay(of: lastDate) {
                 return .end(cellStyle: self.cellStyles.selectionStyle)
-            } else if date.isInBetween(beginDate: firstDate, endDate: lastDate) {
+            } else if date.isDayInBetween(beginDate: firstDate, endDate: lastDate) {
                 return .medium(cellStyle: self.cellStyles.selectionStyle)
             } else {
                 return .none(cellStyle: self.cellStyles.disabledStyle)
