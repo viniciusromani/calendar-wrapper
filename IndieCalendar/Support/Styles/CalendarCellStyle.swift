@@ -1,37 +1,5 @@
 import UIKit
 
-enum CalendarCellStyleType {
-    case checkIn
-    case unavailability
-    
-    var enabledStyle: CalendarCellStyle {
-        switch self {
-        case .checkIn:
-            return CheckInCalendarCellEnabledStyle()
-        case .unavailability:
-            return UnavailabilityCalendarCellEnabledStyle()
-        }
-    }
-    
-    var disabledStyle: CalendarCellStyle {
-        switch self {
-        case .checkIn:
-            return CheckInCalendarCellDisabledStyle()
-        case .unavailability:
-            return UnavailabilityCalendarCellDisabledStyle()
-        }
-    }
-    
-    var selectionStyle: CalendarCellStyle {
-        switch self {
-        case .checkIn:
-            return CheckInCalendarCellSelectionStyle()
-        case .unavailability:
-            return UnavailabilityCalendarCellSelectionStyle()
-        }
-    }
-}
-
 protocol CalendarCellStyle {
     var height: CGFloat { get set }
     var font: UIFont { get set }

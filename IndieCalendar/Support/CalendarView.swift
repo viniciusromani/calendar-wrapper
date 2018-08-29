@@ -1,104 +1,9 @@
+import JTAppleCalendar
+import RxSwift
 import SnapKit
 import SwiftDate
-import JTAppleCalendar
 
-enum CalendarCellSelectionMode {
-    case begin(cellStyle: CalendarCellStyle)
-    case end(cellStyle: CalendarCellStyle)
-    case medium(cellStyle: CalendarCellStyle)
-    case only(cellStyle: CalendarCellStyle)
-    case none(cellStyle: CalendarCellStyle)
-}
-
-class CalendarCell: JTAppleCell {
-    
-    private let dayNumber = UILabel()
-    private let dayFormater = DateFormatter()
-    private var defaultBackgroundColor: UIColor?
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.buildView()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    private func buildView() {
-        self.dayFormater.dateFormat = "d"
-        
-        self.addSubviews()
-        self.formatViews()
-        self.addConstraintsToSubviews()
-    }
-    
-    private func addSubviews() {
-        self.addSubview(self.dayNumber)
-    }
-    
-    private func formatViews() {
-        self.dayNumber.textAlignment = .center
-        self.dayNumber.clipsToBounds = true
-    }
-    
-    private func addConstraintsToSubviews() {
-        
-        self.translatesAutoresizingMaskIntoConstraints = true
-        
-        dayNumber.snp.makeConstraints { make in
-            make.centerX.centerY.equalTo(self)
-        }
-    }
-    
-    private func updateMode(_ mode: CalendarCellSelectionMode) {
-        switch mode {
-        case .none:
-            self.dayNumber.backgroundColor = self.defaultBackgroundColor
-        case .begin(let cellStyle):
-            self.applyStyle(cellStyle)
-        case .end(let cellStyle):
-            self.applyStyle(cellStyle)
-        case .only(let cellStyle):
-            self.applyStyle(cellStyle)
-        case .medium(let cellStyle):
-            self.applyStyle(cellStyle)
-        }
-    }
-    
-    func setSelection(mode: CalendarCellSelectionMode) {
-        self.updateMode(mode)
-    }
-    
-    func applyStyle(_ style: CalendarCellStyle, shouldInteract: Bool = true) {
-        self.isUserInteractionEnabled = shouldInteract
-        
-        self.dayNumber.font = style.font
-        self.dayNumber.textColor = style.textColor
-        self.dayNumber.layer.borderWidth = style.borderWidth
-        self.dayNumber.layer.borderColor = style.borderColor.cgColor
-        self.dayNumber.layer.cornerRadius = style.cornerRadius
-        self.dayNumber.backgroundColor = style.backgroundColor
-        self.dayNumber.attributedText = NSAttributedString(string: self.dayNumber.text ?? "", attributes: style.textAttributes)
-        self.defaultBackgroundColor = style.backgroundColor
-    }
-    
-    func removeStyle() {
-        self.isUserInteractionEnabled = false
-        
-        self.dayNumber.backgroundColor = .clear
-        self.dayNumber.layer.borderColor = UIColor.clear.cgColor
-    }
-    
-    func setDay(with date: Date?) {
-        guard let incomingDate = date else {
-            self.dayNumber.text = ""
-            return
-        }
-        
-        self.dayNumber.text = self.dayFormater.string(from: incomingDate)
-    }
-}
+typealias SelectedCalendarPeriod = (beginDate: Date?, endDate: Date?)
 
 class CalendarView: UIView {
     
@@ -108,8 +13,12 @@ class CalendarView: UIView {
     var endCalendarDate: Date
     
     // control variables
-    private let cellStyles: CalendarCellStyleType
+    private let calendarStyle: CalendarStyle
+    private var cellStyles: CalendarCellStyles!
+    private var selectionManipulation: CalendarSelectionManipulation!
     private let numberOfRows: Int
+    
+    private let scrolledDateSubject = BehaviorSubject<Date>(value: Date())
     
     var firstDate: Date? {
         didSet {
@@ -122,9 +31,14 @@ class CalendarView: UIView {
         }
     }
     
-    init(numberOfRows: Int, cellStyles: CalendarCellStyleType, beginCalendarDate: Date = Date(), endCalendarDate: Date = Date() + 1.years) {
+    init(numberOfRows: Int,
+         calendarStyle: CalendarStyle,
+         beginCalendarDate: Date = Date(),
+         endCalendarDate: Date = Date() + 1.years) {
         self.numberOfRows = numberOfRows
-        self.cellStyles = cellStyles
+        self.calendarStyle = calendarStyle
+        self.cellStyles = calendarStyle.cellStyles
+        self.selectionManipulation = calendarStyle.selectionManipulation
         self.beginCalendarDate = beginCalendarDate
         self.endCalendarDate = endCalendarDate
         super.init(frame: .zero)
@@ -148,27 +62,28 @@ class CalendarView: UIView {
         self.formatViews()
         self.addConstraintsToSubviews()
     }
-
+    
     private func addSubviews() {
         self.addSubview(self.calendarView)
     }
-
+    
     private func formatViews() {
         self.backgroundColor = .clear
         
         self.calendarView.backgroundColor = .clear
-        self.calendarView.scrollDirection = .horizontal
+        self.calendarView.showsVerticalScrollIndicator = false
+        self.calendarView.showsHorizontalScrollIndicator = false
+        self.calendarView.scrollDirection = self.calendarStyle.scrollDirection
         self.calendarView.scrollingMode = .stopAtEachCalendarFrame
         self.calendarView.register(CalendarCell.self, forCellWithReuseIdentifier: "CalendarCell")
         self.calendarView.calendarDataSource = self
         self.calendarView.calendarDelegate = self
         self.calendarView.reloadData()
     }
-
+    
     private func addConstraintsToSubviews() {
         calendarView.snp.makeConstraints { make in
-            make.top.left.right.equalTo(self)
-            make.height.equalTo(CGFloat(self.numberOfRows) * self.cellStyles.enabledStyle.height)
+            make.top.left.right.bottom.equalTo(self)
         }
     }
 }
@@ -220,7 +135,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
         
         switch cellState.dateBelongsTo {
         case .thisMonth:
-            let selectionMode = getCellSelectionMode(for: date)
+            let selectionMode = self.selectionManipulation.getCellSelectionMode(for: date, using: self.cellStyles)
             calendarCell.setSelection(mode: selectionMode)
         default: break
         }
@@ -229,54 +144,28 @@ extension CalendarView: JTAppleCalendarViewDelegate {
     func calendar(_ calendar: JTAppleCalendarView, didSelectDate date: Date, cell: JTAppleCell?, cellState: CellState) {
         switch cellState.dateBelongsTo {
         case .thisMonth:
-            self.manipulateNewClick(onDate: date)
+            self.selectionManipulation.manipulateDateClick(date)
+            self.selectionManipulation.triggerSubject(onDate: date)
+            self.calendarView.reloadData()
         default: break
         }
     }
     
-    // Helpers
-    
-    private func getCellSelectionMode(for date: Date) -> CalendarCellSelectionMode {
-        if firstDate == nil {
-            return .none(cellStyle: self.cellStyles.disabledStyle)
+    func calendar(_ calendar: JTAppleCalendarView, didScrollToDateSegmentWith visibleDates: DateSegmentInfo) {
+        let date = visibleDates.monthDates.first?.date ?? Date()
+        
+        guard date < self.endCalendarDate else {
+            return
         }
         
-        if let firstDate = self.firstDate, lastDate == nil, date.isSameDay(of: firstDate) {
-            return .only(cellStyle: self.cellStyles.selectionStyle)
-        }
-        
-        if let firstDate = self.firstDate, let lastDate = self.lastDate {
-            if date.isSameDay(of: firstDate) {
-                return .begin(cellStyle: self.cellStyles.selectionStyle)
-            } else if date.isSameDay(of: lastDate) {
-                return .end(cellStyle: self.cellStyles.selectionStyle)
-            } else if date.isDayInBetween(beginDate: firstDate, endDate: lastDate) {
-                return .medium(cellStyle: self.cellStyles.selectionStyle)
-            } else {
-                return .none(cellStyle: self.cellStyles.disabledStyle)
-            }
-        }
-        
-        return .none(cellStyle: self.cellStyles.enabledStyle)
+        self.scrolledDateSubject.on(.next(date))
     }
     
-    private func manipulateNewClick(onDate date: Date) {
-        // first click
-        if firstDate == nil {
-            self.firstDate = date
-            return
-        }
-        
-        // third click
-        if firstDate != nil, lastDate != nil {
-            self.firstDate = date
-            self.lastDate = nil
-            return
-        }
-        
-        // second click
-        let otherDate = (self.firstDate as NSDate?)?.copy() as? Date
-        self.firstDate = min(otherDate!, date)
-        self.lastDate = max(otherDate!, date)
+    func scrolledDateObservable() -> Observable<Date> {
+        return self.scrolledDateSubject
+    }
+    
+    func selectedPeriodObservable() -> Observable<SelectedCalendarPeriod> {
+        return self.selectionManipulation.selectedPeriodObservable()
     }
 }

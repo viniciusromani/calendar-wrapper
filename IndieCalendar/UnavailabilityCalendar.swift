@@ -1,6 +1,7 @@
 import SnapKit
 import SwiftDate
 import UIKit
+import RxSwift
 
 class UnavailabilityCalendar: UIView {
     
@@ -12,13 +13,20 @@ class UnavailabilityCalendar: UIView {
     private let weekDayStack = UIStackView()
     private let weekDaysLabels = [UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel()]
     private let weekTitles = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
-    private let calendar = CalendarView(numberOfRows: 6, cellStyles: .unavailability)
+    let calendarStyle = UnavailabilityCalendarStyle()
+    lazy var calendar = CalendarView(numberOfRows: 6, calendarStyle: self.calendarStyle)
     let selectMonth = UIButton(type: .custom)
+    private let variableMonth = BehaviorSubject<String>(value: "")
+    private let disposeBag = DisposeBag()
     
     // Init
     init() {
         super.init(frame: CGRect.zero)
         self.buildView()
+        
+        self.calendar.selectedPeriodObservable().subscribe(onNext: { (beginDate, endDate) in
+            print("selected! \(beginDate) dateee \(endDate)")
+        }).disposed(by: self.disposeBag)
     }
     
     override init(frame: CGRect) {
@@ -30,6 +38,9 @@ class UnavailabilityCalendar: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private let navigation = UIView()
+    private let navTitle = UILabel()
+    
     // Build view
     private func buildView() {
         self.addViews()
@@ -38,6 +49,8 @@ class UnavailabilityCalendar: UIView {
     }
     
     private func addViews() {
+        self.addSubview(navigation)
+        self.navigation.addSubview(navTitle)
         self.addSubview(leftArrow)
         self.addSubview(rightArrow)
         self.addSubview(month)
@@ -49,6 +62,15 @@ class UnavailabilityCalendar: UIView {
     }
     
     private func formatViews() {
+        self.navigation.backgroundColor = UIColor.white
+        self.navigation.layer.masksToBounds = false
+        self.navigation.layer.shadowColor = UIColor.black.cgColor
+        self.navigation.layer.shadowOpacity = 0.1
+        self.navigation.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        self.navTitle.text = "Title"
+        self.navTitle.textColor = UIColor.black
+        
         self.backgroundColor = UIColor(red: 250 / 255, green: 251 / 255, blue: 252 / 255, alpha: 1)
         
         self.leftArrow.setImage(UIImage(named: "seta")!, for: .normal)
@@ -84,6 +106,16 @@ class UnavailabilityCalendar: UIView {
     }
     
     private func addConstraintsToSubviews() {
+        
+        navigation.snp.makeConstraints { make in
+            make.top.left.right.equalTo(self)
+            make.height.equalTo(44 + 40)
+        }
+        
+        navTitle.snp.makeConstraints { make in
+            make.centerX.equalTo(self.navigation)
+            make.centerY.equalTo(self.navigation).inset(40 / 2)
+        }
         
         leftArrow.snp.makeConstraints { make in
             make.top.equalTo(self).inset(100)
@@ -126,37 +158,9 @@ class UnavailabilityCalendar: UIView {
     
     func goToNextMonth() {
         calendar.calendarView.scrollToSegment(.next)
-        
-        guard let firstDate = calendar.calendarView.visibleDates().monthDates.first?.date else {
-                return
-        }
-        
-        let nextMonthDate = firstDate + 1.months
-        let endCalendarDate = self.calendar.endCalendarDate
-        
-        guard nextMonthDate.isMonthBefore(date: endCalendarDate) ||
-              nextMonthDate.isSameMonth(of: endCalendarDate) else {
-            return
-        }
-        
-        self.month.text = nextMonthDate.monthName(.default) + " \(nextMonthDate.year)"
     }
     
     func goToPreviousMonth() {
         calendar.calendarView.scrollToSegment(.previous)
-        
-        guard let firstDate = calendar.calendarView.visibleDates().monthDates.first?.date else {
-            return
-        }
-        
-        let previousMonthDate = firstDate - 1.months
-        let beginCalendarDate = self.calendar.beginCalendarDate
-        
-        guard previousMonthDate.isMonthAfter(date: beginCalendarDate) ||
-              previousMonthDate.isSameMonth(of: beginCalendarDate) else {
-            return
-        }
-        
-        self.month.text = previousMonthDate.monthName(.default) + " \(previousMonthDate.year)"
     }
 }

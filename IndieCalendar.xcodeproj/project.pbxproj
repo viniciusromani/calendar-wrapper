@@ -19,6 +19,7 @@
 		A1FE40D52125FC56001060C6 /* CalendarStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D42125FC56001060C6 /* CalendarStyle.swift */; };
 		A1FE40D721260143001060C6 /* UnavailabilityCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D621260143001060C6 /* UnavailabilityCalendar.swift */; };
 		A1FE40D921262D6D001060C6 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FE40D821262D6D001060C6 /* Date+Extensions.swift */; };
+		A1FFC7A7213607980042F13A /* CalendarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1FFC7A6213607980042F13A /* CalendarCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		A1FE40D42125FC56001060C6 /* CalendarStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarStyle.swift; sourceTree = "<group>"; };
 		A1FE40D621260143001060C6 /* UnavailabilityCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnavailabilityCalendar.swift; sourceTree = "<group>"; };
 		A1FE40D821262D6D001060C6 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		A1FFC7A6213607980042F13A /* CalendarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CalendarCell.swift; sourceTree = "<group>"; };
 		AC5047DE5EA85088A012DC35 /* Pods-IndieCalendar.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-IndieCalendar.release.xcconfig"; path = "Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar.release.xcconfig"; sourceTree = "<group>"; };
 		D99AAA2C2CFE087FB3E8275F /* Pods_IndieCalendar.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_IndieCalendar.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -99,6 +101,7 @@
 			children = (
 				A1FE40D12125F2D5001060C6 /* Styles */,
 				A1FE40CD2125C0F9001060C6 /* CalendarView.swift */,
+				A1FFC7A6213607980042F13A /* CalendarCell.swift */,
 				A1FE40D821262D6D001060C6 /* Date+Extensions.swift */,
 			);
 			path = Support;
@@ -199,12 +202,14 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-IndieCalendar/Pods-IndieCalendar-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/JTAppleCalendar/JTAppleCalendar.framework",
+				"${BUILT_PRODUCTS_DIR}/RxSwift/RxSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftDate/SwiftDate.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JTAppleCalendar.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RxSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftDate.framework",
 			);
@@ -242,6 +247,7 @@
 				A1FE40D921262D6D001060C6 /* Date+Extensions.swift in Sources */,
 				A1FE40D721260143001060C6 /* UnavailabilityCalendar.swift in Sources */,
 				A1FE40D02125C0F9001060C6 /* CalendarView.swift in Sources */,
+				A1FFC7A7213607980042F13A /* CalendarCell.swift in Sources */,
 				A1FE40B121252CE8001060C6 /* ViewController.swift in Sources */,
 				A1FE40AF21252CE8001060C6 /* AppDelegate.swift in Sources */,
 				A1F4F77E212714AB002FC0F2 /* CheckInCalendar.swift in Sources */,
