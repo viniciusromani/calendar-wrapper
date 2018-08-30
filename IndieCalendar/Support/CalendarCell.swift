@@ -67,9 +67,8 @@ class CalendarCell: JTAppleCell {
         self.updateMode(mode)
     }
     
-    func applyStyle(_ style: CalendarCellStyle, shouldInteract: Bool = true) {
-        self.isUserInteractionEnabled = shouldInteract
-        
+    func applyStyle(_ style: CalendarCellStyle) {
+        self.isUserInteractionEnabled = style.isUserInteractionEnabled
         self.dayNumber.font = style.font
         self.dayNumber.textColor = style.textColor
         self.dayNumber.layer.borderWidth = style.borderWidth

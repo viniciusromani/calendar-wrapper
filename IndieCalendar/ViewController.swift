@@ -52,6 +52,6 @@ class ViewController: UIViewController {
     }
     
     @objc func onSelectMonth() {
-        print("select month")
+        let periods = self.unavailabilityCalendar.selectedDates.extractPeriods()
     }
 }

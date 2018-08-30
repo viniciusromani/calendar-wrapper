@@ -13,19 +13,20 @@ class UnavailabilityCalendar: UIView {
     private let weekDayStack = UIStackView()
     private let weekDaysLabels = [UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel()]
     private let weekTitles = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
-    let calendarStyle = UnavailabilityCalendarStyle()
-    lazy var calendar = CalendarView(numberOfRows: 6, calendarStyle: self.calendarStyle)
+    private let calendar = CalendarView(numberOfRows: 6, calendarStyle: UnavailabilityCalendarStyle())
     let selectMonth = UIButton(type: .custom)
     private let variableMonth = BehaviorSubject<String>(value: "")
     private let disposeBag = DisposeBag()
     
+    var selectedDates: [Date] = []
+    
     // Init
     init() {
-        super.init(frame: CGRect.zero)
+        super.init(frame: .zero)
         self.buildView()
         
-        self.calendar.selectedPeriodObservable().subscribe(onNext: { (beginDate, endDate) in
-            print("selected! \(beginDate) dateee \(endDate)")
+        self.calendar.calendarStyle.selectionManipulation.selectedPeriodObservable().subscribe(onNext: { dates in
+            self.selectedDates = dates
         }).disposed(by: self.disposeBag)
     }
     

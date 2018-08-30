@@ -3,38 +3,24 @@ import RxSwift
 import SnapKit
 import SwiftDate
 
-typealias SelectedCalendarPeriod = (beginDate: Date?, endDate: Date?)
-
-class CalendarView: UIView {
-    
+class CalendarView<Style: CalendarStyle>: UIView {
     let calendarView = JTAppleCalendarView()
     
     var beginCalendarDate: Date
     var endCalendarDate: Date
     
     // control variables
-    private let calendarStyle: CalendarStyle
+    let calendarStyle: Style
     private var cellStyles: CalendarCellStyles!
-    private var selectionManipulation: CalendarSelectionManipulation!
+    private var selectionManipulation: Style.SelectionManipulation!
     private let numberOfRows: Int
     
     private let scrolledDateSubject = BehaviorSubject<Date>(value: Date())
     
-    var firstDate: Date? {
-        didSet {
-            updateDates()
-        }
-    }
-    var lastDate: Date? {
-        didSet {
-            updateDates()
-        }
-    }
-    
     init(numberOfRows: Int,
-         calendarStyle: CalendarStyle,
          beginCalendarDate: Date = Date(),
-         endCalendarDate: Date = Date() + 1.years) {
+         endCalendarDate: Date = Date() + 1.years,
+         calendarStyle: Style) {
         self.numberOfRows = numberOfRows
         self.calendarStyle = calendarStyle
         self.cellStyles = calendarStyle.cellStyles
@@ -117,7 +103,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
                 self.cellStyles.disabledStyle
             
             calendarCell.setDay(with: date)
-            calendarCell.applyStyle(style, shouldInteract: isAfterToday)
+            calendarCell.applyStyle(style)
         default:
             calendarCell.setDay(with: nil)
             calendarCell.removeStyle()
@@ -145,7 +131,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
         switch cellState.dateBelongsTo {
         case .thisMonth:
             self.selectionManipulation.manipulateDateClick(date)
-            self.selectionManipulation.triggerSubject(onDate: date)
+            self.selectionManipulation.triggerSubject()
             self.calendarView.reloadData()
         default: break
         }
@@ -163,9 +149,5 @@ extension CalendarView: JTAppleCalendarViewDelegate {
     
     func scrolledDateObservable() -> Observable<Date> {
         return self.scrolledDateSubject
-    }
-    
-    func selectedPeriodObservable() -> Observable<SelectedCalendarPeriod> {
-        return self.selectionManipulation.selectedPeriodObservable()
     }
 }

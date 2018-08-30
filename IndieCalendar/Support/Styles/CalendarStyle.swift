@@ -3,28 +3,42 @@ import SwiftDate
 import UIKit
 
 protocol CalendarSelectionManipulation {
-    var selectedPeriodSubject: PublishSubject<SelectedCalendarPeriod> { get set }
+    associatedtype T
+    var selectedPeriodSubject: PublishSubject<T> { get set }
+    var alreadySelectedDates: [Date] { get }
     
     mutating func manipulateDateClick(_ date: Date)
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode
-    func triggerSubject(onDate date: Date)
-    func selectedPeriodObservable() -> Observable<SelectedCalendarPeriod>
+    func triggerSubject()
+    func selectedPeriodObservable() -> Observable<T>
 }
 extension CalendarSelectionManipulation {
     func manipulateDateClick(_ date: Date) { }
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode {
         return .none(cellStyle: cellStyles.disabledStyle)
     }
-    func triggerSubject(onDate date: Date) { }
-    func selectedPeriodObservable() -> Observable<SelectedCalendarPeriod> {
+    func triggerSubject() { }
+    func selectedPeriodObservable() -> Observable<T> {
         return self.selectedPeriodSubject
+    }
+    
+    internal func isDateAlreadySelected(_ date: Date) -> Bool {
+        let isAlreadySelected = alreadySelectedDates.map { alreadySelectedDate -> Bool in
+            return date.isDateEqual(to: alreadySelectedDate)
+            }.first ?? false
+        
+        return isAlreadySelected
     }
 }
 
+typealias SelectedCalendarPeriod = (beginDate: Date?, endDate: Date?)
 struct RangedCalendarSelection: CalendarSelectionManipulation {
+    typealias T = SelectedCalendarPeriod
+    var alreadySelectedDates: [Date] = [Date()]
+    var selectedPeriodSubject: PublishSubject<SelectedCalendarPeriod> = PublishSubject<SelectedCalendarPeriod>()
+    
     private var firstDate: Date?
     private var lastDate: Date?
-    var selectedPeriodSubject: PublishSubject<SelectedCalendarPeriod> = PublishSubject<SelectedCalendarPeriod>()
     
     mutating func manipulateDateClick(_ date: Date) {
         // first click
@@ -47,6 +61,10 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
     }
     
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode {
+        guard !isDateAlreadySelected(date) else {
+            return .only(cellStyle: cellStyles.selectedStyle)
+        }
+        
         if firstDate == nil {
             return .none(cellStyle: cellStyles.disabledStyle)
         }
@@ -70,19 +88,19 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
         return .none(cellStyle: cellStyles.enabledStyle)
     }
     
-    func triggerSubject(onDate date: Date) {
+    func triggerSubject() {
         let period: SelectedCalendarPeriod = (beginDate: self.firstDate, endDate: self.lastDate)
         self.selectedPeriodSubject.on(.next(period))
     }
 }
 struct SingledCalendarSelection: CalendarSelectionManipulation {
-    private var currentSelectedDate: Date?
+    typealias T = [Date]
+    var alreadySelectedDates: [Date] = [Date()]
+    var selectedPeriodSubject: PublishSubject<[Date]> = PublishSubject<[Date]>()
+    
     private var selectedDates: [Date] = []
-    var selectedPeriodSubject: PublishSubject<SelectedCalendarPeriod> = PublishSubject<SelectedCalendarPeriod>()
     
     mutating func manipulateDateClick(_ date: Date) {
-        self.currentSelectedDate = date
-        
         guard !selectedDates.contains(date) else {
             self.removeDateFromDataSource(date)
             return
@@ -99,6 +117,10 @@ struct SingledCalendarSelection: CalendarSelectionManipulation {
     }
     
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode {
+        guard !isDateAlreadySelected(date) else {
+            return .only(cellStyle: cellStyles.selectedStyle)
+        }
+        
         guard selectedDates.contains(date) else {
             return .none(cellStyle: cellStyles.enabledStyle)
         }
@@ -106,28 +128,24 @@ struct SingledCalendarSelection: CalendarSelectionManipulation {
         return .only(cellStyle: cellStyles.selectionStyle)
     }
     
-    func triggerSubject(onDate date: Date) {
-        guard selectedDates.contains(date) else {
-            return
-        }
-        
-        let period: SelectedCalendarPeriod = (beginDate: date, endDate: nil)
-        self.selectedPeriodSubject.on(.next(period))
+    func triggerSubject() {
+        self.selectedPeriodSubject.on(.next(self.selectedDates))
     }
 }
 
 
 
-protocol CalendarStyle {
+protocol CalendarStyle: class {
+    associatedtype SelectionManipulation: CalendarSelectionManipulation
     var scrollDirection: UICollectionViewScrollDirection { get }
     var cellStyles: CalendarCellStyles { get }
-    var selectionManipulation: CalendarSelectionManipulation { get }
+    var selectionManipulation: SelectionManipulation { get }
 }
-
 protocol CalendarCellStyles {
     var enabledStyle: CalendarCellStyle { get }
     var disabledStyle: CalendarCellStyle { get }
     var selectionStyle: CalendarCellStyle { get }
+    var selectedStyle: CalendarCellStyle { get }
 }
 
 
@@ -135,12 +153,13 @@ struct UnavailabilityCellStyles: CalendarCellStyles {
     var enabledStyle: CalendarCellStyle = UnavailabilityCalendarCellEnabledStyle()
     var disabledStyle: CalendarCellStyle = UnavailabilityCalendarCellDisabledStyle()
     var selectionStyle: CalendarCellStyle = UnavailabilityCalendarCellSelectionStyle()
+    var selectedStyle: CalendarCellStyle = UnavailabilityCalendarCellSelectedStyle()
 }
-
-struct UnavailabilityCalendarStyle: CalendarStyle {
+class UnavailabilityCalendarStyle: CalendarStyle {
+    typealias SelectionManipulation = SingledCalendarSelection
     var scrollDirection: UICollectionViewScrollDirection = .horizontal
     var cellStyles: CalendarCellStyles = UnavailabilityCellStyles()
-    var selectionManipulation: CalendarSelectionManipulation = SingledCalendarSelection()
+    var selectionManipulation: SingledCalendarSelection = SingledCalendarSelection()
 }
 
 
@@ -148,10 +167,11 @@ struct CheckInCellStyles: CalendarCellStyles {
     var enabledStyle: CalendarCellStyle = CheckInCalendarCellEnabledStyle()
     var disabledStyle: CalendarCellStyle = CheckInCalendarCellDisabledStyle()
     var selectionStyle: CalendarCellStyle = CheckInCalendarCellSelectionStyle()
+    var selectedStyle: CalendarCellStyle = CheckInCalendarCellSelectedStyle()
 }
-
-struct CheckInCalendarStyle: CalendarStyle {
+class CheckInCalendarStyle: CalendarStyle {
+    typealias SelectionManipulation = RangedCalendarSelection
     var scrollDirection: UICollectionViewScrollDirection = .horizontal
     var cellStyles: CalendarCellStyles = CheckInCellStyles()
-    var selectionManipulation: CalendarSelectionManipulation = RangedCalendarSelection()
+    var selectionManipulation: RangedCalendarSelection = RangedCalendarSelection()
 }
