@@ -66,6 +66,25 @@ extension Date {
         }
     }
     
+    func isInBetween(beginDate: Date, endDate: Date) -> Bool {
+        let selfDateInRegion = DateInRegion(self, region: .current)
+        let beginDateInRegion = DateInRegion(beginDate, region: .current)
+        let endDateInRegion = DateInRegion(endDate, region: .current)
+        
+        let timePeriod = TimePeriod(start: beginDateInRegion, end: endDateInRegion)
+        return timePeriod.contains(date: selfDateInRegion)
+    }
+    
+    func getImmediatelyBeforeDate(in sequence: Array<Date>) -> Date? {
+        let before = sequence.filter { $0.isBefore(date: self) }.last
+        return before
+    }
+    
+    func getImmediatelyAfterDate(in sequence: Array<Date>) -> Date? {
+        let after = sequence.filter { $0.isAfter(date: self) }.first
+        return after
+    }
+    
     func isSameDay(of date: Date) -> Bool {
         return Calendar.current.compare(self, to: date, toGranularity: .day) == .orderedSame
     }
@@ -208,6 +227,18 @@ extension Array where Element == SelectedCalendarPeriod {
         
         return dates
     }
+    
+//    func extractSwiftDateTimePeriods() -> [TimePeriod] {
+//        return self.compactMap { period -> TimePeriod? in
+//            guard let beginDate = period.beginDate, let endDate = period.endDate else {
+//                return nil
+//            }
+//            
+//            let start = DateInRegion(beginDate, region: .current)
+//            let end = DateInRegion(endDate, region: .current)
+//            return TimePeriod(start: start, end: end)
+//        }
+//    }
     
     func getDates(from period: SelectedCalendarPeriod) -> [Date] {
         guard let begin = period.beginDate,

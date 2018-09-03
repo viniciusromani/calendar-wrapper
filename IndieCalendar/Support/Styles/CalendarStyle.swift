@@ -81,8 +81,8 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
                 return .only(cellStyle: cellStyles.selectionStyle)
             }
             
-            guard let selectionMode = self.getCellSelectionMode(for: date, over: firstDate, using: cellStyles) else {
-                return .only(cellStyle: cellStyles.disabledStyle)
+            guard let selectionMode = self.getCellSelectionModeWithFirstDate(for: date, using: cellStyles) else {
+                return .only(cellStyle: cellStyles.selectedStyle)
             }
             
             return selectionMode
@@ -109,18 +109,30 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
     }
 }
 extension RangedCalendarSelection {
-    private func getCellSelectionMode(for currentDate: Date,
-                                      over firstDate: Date,
-                                      using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+    private func getCellSelectionModeWithFirstDate(for currentDate: Date,
+                                                   using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+        
+        guard let firstDate = self.firstDate else {
+            return nil
+        }
         
         let sorted = alreadySelectedDates.sorted { $0 < $1 }
-        guard let selectedFirst = sorted.first, let selectedLast = sorted.last else {
+        
+        let immediatelyBefore = firstDate.getImmediatelyBeforeDate(in: alreadySelectedDates) ?? sorted.first
+        let immediatelyAfter = firstDate.getImmediatelyAfterDate(in: alreadySelectedDates) ?? sorted.last
+        
+        guard let selectedFirst = immediatelyBefore, let selectedLast = immediatelyAfter else {
             return nil
         }
         
         if firstDate.isBefore(date: selectedFirst) {
             let previous = self.getCellSelectionMode(forPrevious: currentDate, using: styles)
             return previous
+        }
+        
+        if firstDate.isInBetween(beginDate: selectedFirst, endDate: selectedLast) {
+            let inBetween = self.getCellSelectionMode(forInBetween: currentDate, using: styles)
+            return inBetween
         }
         
         if firstDate.isAfter(date: selectedLast) {
@@ -134,15 +146,35 @@ extension RangedCalendarSelection {
     private func getCellSelectionMode(forPrevious currentDate: Date,
                                       using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
         let sorted = alreadySelectedDates.sorted { $0 < $1 }
-        guard let selectedFirst = sorted.first, let selectedLast = sorted.last else {
-            return nil
+        guard let selectedFirst = sorted.first,
+              let selectedLast = sorted.last else {
+                return nil
         }
         
+        if currentDate.isBefore(date: selectedFirst) {
+            return .only(cellStyle: styles.enabledStyle)
+        }
         if currentDate.isAfter(date: selectedLast) {
             return .only(cellStyle: styles.selectedStyle)
         }
-        if currentDate.isBefore(date: selectedFirst) {
+        
+        return nil
+    }
+    
+    private func getCellSelectionMode(forInBetween currentDate: Date,
+                                      using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+        
+        guard let firstDate = self.firstDate,
+              let selectedFirst = firstDate.getImmediatelyBeforeDate(in: alreadySelectedDates),
+              let selectedLast = firstDate.getImmediatelyAfterDate(in: alreadySelectedDates) else {
+                return nil
+        }
+        
+        if currentDate.isAfter(date: selectedFirst) {
             return .only(cellStyle: styles.enabledStyle)
+        }
+        if currentDate.isBefore(date: selectedLast) {
+            return .only(cellStyle: styles.selectedStyle)
         }
         
         return nil
@@ -217,6 +249,7 @@ protocol CalendarStyle: class {
     var cellStyles: CalendarCellStyles { get }
     var selectionManipulation: SelectionManipulation { get }
     var alreadySelectedDates: [Date] { get set }
+    var numberOfRows: Int { get }
     
     init(alreadySelectedDates: [Date])
 }
@@ -240,6 +273,7 @@ class UnavailabilityCalendarStyle: CalendarStyle {
     var cellStyles: CalendarCellStyles = UnavailabilityCellStyles()
     var alreadySelectedDates: [Date]
     lazy var selectionManipulation: SingledCalendarSelection = SingledCalendarSelection(alreadySelectedDates: self.alreadySelectedDates)
+    var numberOfRows: Int = 6
     
     required init(alreadySelectedDates: [Date]) {
         self.alreadySelectedDates = alreadySelectedDates
@@ -259,6 +293,7 @@ class CheckInCalendarStyle: CalendarStyle {
     var cellStyles: CalendarCellStyles = CheckInCellStyles()
     var alreadySelectedDates: [Date]
     lazy var selectionManipulation: RangedCalendarSelection = RangedCalendarSelection(alreadySelectedDates: self.alreadySelectedDates)
+    var numberOfRows: Int = 6
     
     required init(alreadySelectedDates: [Date]) {
         self.alreadySelectedDates = alreadySelectedDates

@@ -13,8 +13,7 @@ class UnavailabilityCalendar: UIView {
     private let weekDayStack = UIStackView()
     private let weekDaysLabels = [UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel()]
     private let weekTitles = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
-    let calendar = CalendarView(numberOfRows: 6,
-                                calendarStyle: CheckInCalendarStyle(alreadySelectedDates: []))
+    let calendar = CalendarView(calendarStyle: CheckInCalendarStyle(alreadySelectedDates: []))
     let selectMonth = UIButton(type: .custom)
     private let variableMonth = BehaviorSubject<String>(value: "")
     private let disposeBag = DisposeBag()

@@ -13,15 +13,12 @@ class CalendarView<Style: CalendarStyle>: UIView {
     let calendarStyle: Style
     private var cellStyles: CalendarCellStyles!
     private var selectionManipulation: Style.SelectionManipulation!
-    private let numberOfRows: Int
     
     private let scrolledDateSubject = BehaviorSubject<Date>(value: Date())
     
-    init(numberOfRows: Int,
-         beginCalendarDate: Date = Date(),
+    init(beginCalendarDate: Date = Date(),
          endCalendarDate: Date = Date() + 1.years,
          calendarStyle: Style) {
-        self.numberOfRows = numberOfRows
         self.calendarStyle = calendarStyle
         self.cellStyles = calendarStyle.cellStyles
         self.selectionManipulation = calendarStyle.selectionManipulation
@@ -79,7 +76,7 @@ extension CalendarView: JTAppleCalendarViewDataSource {
         
         let configuration = ConfigurationParameters(startDate: self.beginCalendarDate,
                                                     endDate: self.endCalendarDate,
-                                                    numberOfRows: self.numberOfRows,
+                                                    numberOfRows: self.calendarStyle.numberOfRows,
                                                     calendar: Calendar(identifier: .gregorian),
                                                     generateInDates: .forAllMonths,
                                                     generateOutDates: .tillEndOfGrid,
@@ -97,7 +94,7 @@ extension CalendarView: JTAppleCalendarViewDelegate {
         
         switch cellState.dateBelongsTo {
         case .thisMonth:
-            let isAfterToday = date.isSameDay(of: Date()) || date.isDayAfter(date: Date())
+            let isAfterToday = date.isToday || date.isAfterToday()
             let style: CalendarCellStyle = isAfterToday ?
                 self.cellStyles.enabledStyle:
                 self.cellStyles.disabledStyle
