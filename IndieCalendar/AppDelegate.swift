@@ -6,6 +6,7 @@
 //  Copyright © 2018 Vinicius Romani. All rights reserved.
 //
 
+import SwiftDate
 import UIKit
 
 @UIApplicationMain
@@ -20,7 +21,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let viewController = ViewController()
         self.window?.rootViewController = viewController
         self.window?.makeKeyAndVisible()
-        
+//        
+//        let alreadySelected = [Date() + 5.days,
+//                               Date() + 6.days,
+//                               Date() + 7.days]
+//        
+//        let dates = [Date(),
+//                     Date() + 1.days,
+//                     Date() + 2.days,
+//                     Date() + 3.days,
+//                     Date() + 4.days,
+//                     Date() + 5.days,
+//                     Date() + 6.days,
+//                     Date() + 7.days,
+//                     Date() + 8.days,
+//                     Date() + 9.days,
+//                     Date() + 10.days,
+//                     Date() + 11.days,
+//                     Date() + 12.days,
+//                     Date() + 13.days,
+//                     Date() + 14.days,
+//                     Date() + 15.days,
+//                     Date() + 16.days,
+//                     Date() + 17.days,
+//                     Date() + 18.days,
+//                     Date() + 19.days,
+//                     Date() + 20.days,
+//                     Date() + 21.days,
+//                     Date() + 22.days]
+//        
+//        for date in dates {
+//            let next = alreadySelected.first { currentDate -> Bool in
+//                let result = date.isAfter(date: currentDate)
+//                print("date \(date) is after \(currentDate) ? \(result)")
+//                
+//                return result
+//            }
+//            
+//            print("next \(next)")
+//        }
+//        
         return true
     }
 

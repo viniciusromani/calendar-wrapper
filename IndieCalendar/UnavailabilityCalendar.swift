@@ -13,7 +13,8 @@ class UnavailabilityCalendar: UIView {
     private let weekDayStack = UIStackView()
     private let weekDaysLabels = [UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel(), UILabel()]
     private let weekTitles = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
-    private let calendar = CalendarView(numberOfRows: 6, calendarStyle: UnavailabilityCalendarStyle())
+    let calendar = CalendarView(numberOfRows: 6,
+                                calendarStyle: CheckInCalendarStyle(alreadySelectedDates: []))
     let selectMonth = UIButton(type: .custom)
     private let variableMonth = BehaviorSubject<String>(value: "")
     private let disposeBag = DisposeBag()
@@ -25,9 +26,9 @@ class UnavailabilityCalendar: UIView {
         super.init(frame: .zero)
         self.buildView()
         
-        self.calendar.calendarStyle.selectionManipulation.selectedPeriodObservable().subscribe(onNext: { dates in
-            self.selectedDates = dates
-        }).disposed(by: self.disposeBag)
+//        self.calendar.calendarStyle.selectionManipulation.selectedPeriodObservable().subscribe(onNext: { date in
+//            self.selectedDates = date
+//        }).disposed(by: self.disposeBag)
     }
     
     override init(frame: CGRect) {

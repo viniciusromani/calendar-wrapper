@@ -38,12 +38,13 @@ struct CheckInCalendarCellSelectedStyle: CalendarCellStyle {
     var isUserInteractionEnabled: Bool = false
     var height: CGFloat = 30
     var font: UIFont = UIFont.systemFont(ofSize: 14)
-    var textColor: UIColor = UIColor.white
+    var textColor: UIColor = UIColor(red: 220 / 255, green: 220 / 255, blue: 220 / 255, alpha: 1)
     var borderWidth: CGFloat = 0
     var borderColor: UIColor = UIColor.clear
     var cornerRadius: CGFloat = 4
-    var backgroundColor: UIColor = UIColor(red: 253 / 255, green: 127 / 255, blue: 35 / 255, alpha: 1)
-    var textAttributes: [NSAttributedStringKey : Any] = [:]
+    var backgroundColor: UIColor = UIColor.clear
+    var textAttributes: [NSAttributedStringKey : Any] = [NSAttributedStringKey.strikethroughStyle: NSUnderlineStyle.styleSingle.rawValue,
+                                                         NSAttributedStringKey.strikethroughColor: UIColor(red: 220 / 255, green: 220 / 255, blue: 220 / 255, alpha: 1)]
 }
 struct CheckInCalendarCellSelectionStyle: CalendarCellStyle {
     var isUserInteractionEnabled: Bool = true

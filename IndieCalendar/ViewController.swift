@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftDate
 import JTAppleCalendar
 
 class ViewController: UIViewController {
@@ -52,6 +53,10 @@ class ViewController: UIViewController {
     }
     
     @objc func onSelectMonth() {
-        let periods = self.unavailabilityCalendar.selectedDates.extractPeriods()
+        self.unavailabilityCalendar.calendar.insertAlreadySelectedDates([Date() + 2.days,
+                                                                         Date() + 3.days,
+                                                                         Date() + 4.days,
+                                                                         Date() + 5.days])
+        
     }
 }

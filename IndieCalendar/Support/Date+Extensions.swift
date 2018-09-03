@@ -2,6 +2,70 @@ import SwiftDate
 import Foundation
 
 extension Date {
+    func isBeforeToday() -> Bool {
+        let calendar = Calendar.current
+        let todayComponents = (calendar as NSCalendar).components([.year, .month, .day], from: Date())
+        let today = calendar.date(from: todayComponents)!
+        
+        let otherDayComponents = (calendar as NSCalendar).components([.year, .month, .day], from: self)
+        let otherDay = calendar.date(from: otherDayComponents)!
+        
+        switch today.compare(otherDay) {
+        case .orderedDescending:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func isAfterToday() -> Bool {
+        let calendar = Calendar.current
+        let todayComponents = (calendar as NSCalendar).components([.year, .month, .day], from: Date())
+        let today = calendar.date(from: todayComponents)!
+        
+        let otherDayComponents = (calendar as NSCalendar).components([.year, .month, .day], from: self)
+        let otherDay = calendar.date(from: otherDayComponents)!
+        
+        switch today.compare(otherDay) {
+        case .orderedAscending:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func isBefore(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let selfComponents = (calendar as NSCalendar).components([.year, .month, .day], from: self)
+        let selfDate = calendar.date(from: selfComponents)!
+        
+        let otherDateComponents = (calendar as NSCalendar).components([.year, .month, .day], from: date)
+        let otherDate = calendar.date(from: otherDateComponents)!
+        
+        switch selfDate.compare(otherDate) {
+        case .orderedAscending:
+            return true
+        default:
+            return false
+        }
+    }
+    
+    func isAfter(date: Date) -> Bool {
+        let calendar = Calendar.current
+        let selfComponents = (calendar as NSCalendar).components([.year, .month, .day], from: self)
+        let selfDate = calendar.date(from: selfComponents)!
+        
+        let otherDateComponents = (calendar as NSCalendar).components([.year, .month, .day], from: date)
+        let otherDate = calendar.date(from: otherDateComponents)!
+        
+        switch selfDate.compare(otherDate) {
+        case .orderedDescending:
+            return true
+        default:
+            return false
+        }
+    }
+    
     func isSameDay(of date: Date) -> Bool {
         return Calendar.current.compare(self, to: date, toGranularity: .day) == .orderedSame
     }
@@ -70,24 +134,106 @@ extension Date {
 extension Array where Element == Date {
     func extractPeriods() -> [SelectedCalendarPeriod] {
         
+        var periods: [SelectedCalendarPeriod] = []
+        var currentPeriod: SelectedCalendarPeriod = (beginDate: nil, endDate: nil)
         
-        for date in self {
+        let sorted = self.sorted { $0 < $1 }
+        
+        for (index, date) in sorted.enumerated() {
             
-            let y = self.first { date.day == $0.day + 1 }
-            
-            
-            
-            
-            print("tchau")
+            if currentPeriod.beginDate == nil {
+                currentPeriod.beginDate = date
+                currentPeriod.endDate = date
+                
+                periods = self.addPeriodIfNeeded(currentIndex: index, currentPeriod, at: periods)
+                continue
+            } else {
+                if date.day == currentPeriod.endDate!.day + 1 {
+                    currentPeriod.endDate = date
+                    periods = self.addPeriodIfNeeded(currentIndex: index, currentPeriod, at: periods)
+                } else {
+                    currentPeriod = resolveEndDateIfNeeded(in: currentPeriod)
+                    
+                    periods.append(currentPeriod)
+                    
+                    currentPeriod.beginDate = date
+                    currentPeriod.endDate = date
+                    
+                    periods = self.addPeriodIfNeeded(currentIndex: index, currentPeriod, at: periods)
+                }
+            }
         }
-    
         
-        print("oi")
-        return []
+        return periods
     }
     
-    private func findPeriods() {
-        let x = self.filter { $0.day == $0.day + 1 }
+    private func addPeriodIfNeeded(currentIndex index: Int,
+                                   _ period: SelectedCalendarPeriod,
+                                   at periods: [SelectedCalendarPeriod]) -> [SelectedCalendarPeriod] {
+        var finalPeriods = periods
         
+        if index == self.count - 1 {
+            let treatedPeriod = resolveEndDateIfNeeded(in: period)
+            finalPeriods.append(treatedPeriod)
+        }
+        
+        return finalPeriods
+    }
+    
+    private func resolveEndDateIfNeeded(in period: SelectedCalendarPeriod) -> SelectedCalendarPeriod {
+        var current = period
+        
+        guard let begin = period.beginDate,
+              let end = period.endDate else {
+                return period
+        }
+        
+        if begin.day == end.day {
+            let treatedEnd = end + 1.minutes
+            current.endDate = treatedEnd
+        }
+        
+        return current
     }
 }
+
+extension Array where Element == SelectedCalendarPeriod {
+    func extractDates() -> [Date] {
+        var dates: [Date] = []
+        
+        for period in self {
+            let periodDates = getDates(from: period)
+            dates.append(contentsOf: periodDates)
+        }
+        
+        return dates
+    }
+    
+    func getDates(from period: SelectedCalendarPeriod) -> [Date] {
+        guard let begin = period.beginDate,
+              let end = period.endDate else {
+                return []
+        }
+        
+        var dates: [Date] = []
+        var currentDate = begin
+        
+        guard !currentDate.isDateEqual(to: end) else {
+            return [currentDate]
+        }
+        
+        while !currentDate.isDateEqual(to: end) {
+            dates.append(currentDate)
+            currentDate = currentDate + 1.days
+        }
+        
+        dates.append(currentDate)
+        
+        return dates
+    }
+}
+
+
+
+
+

@@ -146,8 +146,19 @@ extension CalendarView: JTAppleCalendarViewDelegate {
         
         self.scrolledDateSubject.on(.next(date))
     }
+}
+
+// Helpers
+
+extension CalendarView {
     
     func scrolledDateObservable() -> Observable<Date> {
         return self.scrolledDateSubject
     }
+    
+    func insertAlreadySelectedDates(_ dates: [Date]) {
+        self.selectionManipulation.alreadySelectedDates = dates
+        self.calendarView.reloadDates(dates)
+    }
 }
+

@@ -5,7 +5,9 @@ import UIKit
 protocol CalendarSelectionManipulation {
     associatedtype T
     var selectedPeriodSubject: PublishSubject<T> { get set }
-    var alreadySelectedDates: [Date] { get }
+    var alreadySelectedDates: [Date] { get set }
+    
+    init(alreadySelectedDates: [Date])
     
     mutating func manipulateDateClick(_ date: Date)
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode
@@ -23,22 +25,23 @@ extension CalendarSelectionManipulation {
     }
     
     internal func isDateAlreadySelected(_ date: Date) -> Bool {
-        let isAlreadySelected = alreadySelectedDates.map { alreadySelectedDate -> Bool in
-            return date.isDateEqual(to: alreadySelectedDate)
-            }.first ?? false
-        
-        return isAlreadySelected
+        let firstEqualDate = alreadySelectedDates.first { date.isDateEqual(to: $0) }
+        return firstEqualDate != nil
     }
 }
 
 typealias SelectedCalendarPeriod = (beginDate: Date?, endDate: Date?)
 struct RangedCalendarSelection: CalendarSelectionManipulation {
     typealias T = SelectedCalendarPeriod
-    var alreadySelectedDates: [Date] = [Date()]
+    var alreadySelectedDates: [Date] = []
     var selectedPeriodSubject: PublishSubject<SelectedCalendarPeriod> = PublishSubject<SelectedCalendarPeriod>()
     
     private var firstDate: Date?
     private var lastDate: Date?
+    
+    init(alreadySelectedDates: [Date]) {
+        self.alreadySelectedDates = alreadySelectedDates
+    }
     
     mutating func manipulateDateClick(_ date: Date) {
         // first click
@@ -61,6 +64,10 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
     }
     
     func getCellSelectionMode(for date: Date, using cellStyles: CalendarCellStyles) -> CalendarCellSelectionMode {
+        guard date.isToday || date.isAfterToday() else {
+            return .none(cellStyle: cellStyles.disabledStyle)
+        }
+        
         guard !isDateAlreadySelected(date) else {
             return .only(cellStyle: cellStyles.selectedStyle)
         }
@@ -69,8 +76,16 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
             return .none(cellStyle: cellStyles.disabledStyle)
         }
         
-        if let firstDate = self.firstDate, lastDate == nil, date.isSameDay(of: firstDate) {
-            return .only(cellStyle: cellStyles.selectionStyle)
+        if let firstDate = self.firstDate, lastDate == nil {
+            guard !date.isSameDay(of: firstDate) else {
+                return .only(cellStyle: cellStyles.selectionStyle)
+            }
+            
+            guard let selectionMode = self.getCellSelectionMode(for: date, over: firstDate, using: cellStyles) else {
+                return .only(cellStyle: cellStyles.disabledStyle)
+            }
+            
+            return selectionMode
         }
         
         if let firstDate = self.firstDate, let lastDate = self.lastDate {
@@ -93,12 +108,73 @@ struct RangedCalendarSelection: CalendarSelectionManipulation {
         self.selectedPeriodSubject.on(.next(period))
     }
 }
+extension RangedCalendarSelection {
+    private func getCellSelectionMode(for currentDate: Date,
+                                      over firstDate: Date,
+                                      using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+        
+        let sorted = alreadySelectedDates.sorted { $0 < $1 }
+        guard let selectedFirst = sorted.first, let selectedLast = sorted.last else {
+            return nil
+        }
+        
+        if firstDate.isBefore(date: selectedFirst) {
+            let previous = self.getCellSelectionMode(forPrevious: currentDate, using: styles)
+            return previous
+        }
+        
+        if firstDate.isAfter(date: selectedLast) {
+            let next = self.getCellSelectionMode(forNext: currentDate, using: styles)
+            return next
+        }
+        
+        return nil
+    }
+    
+    private func getCellSelectionMode(forPrevious currentDate: Date,
+                                      using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+        let sorted = alreadySelectedDates.sorted { $0 < $1 }
+        guard let selectedFirst = sorted.first, let selectedLast = sorted.last else {
+            return nil
+        }
+        
+        if currentDate.isAfter(date: selectedLast) {
+            return .only(cellStyle: styles.selectedStyle)
+        }
+        if currentDate.isBefore(date: selectedFirst) {
+            return .only(cellStyle: styles.enabledStyle)
+        }
+        
+        return nil
+    }
+    
+    private func getCellSelectionMode(forNext currentDate: Date,
+                                      using styles: CalendarCellStyles) -> CalendarCellSelectionMode? {
+        let sorted = alreadySelectedDates.sorted { $0 < $1 }
+        guard let selectedFirst = sorted.first, let selectedLast = sorted.last else {
+            return nil
+        }
+        
+        if currentDate.isBefore(date: selectedFirst) {
+            return .only(cellStyle: styles.selectedStyle)
+        }
+        if currentDate.isAfter(date: selectedLast) {
+            return .only(cellStyle: styles.enabledStyle)
+        }
+        
+        return nil
+    }
+}
 struct SingledCalendarSelection: CalendarSelectionManipulation {
     typealias T = [Date]
-    var alreadySelectedDates: [Date] = [Date()]
+    var alreadySelectedDates: [Date]
     var selectedPeriodSubject: PublishSubject<[Date]> = PublishSubject<[Date]>()
     
     private var selectedDates: [Date] = []
+    
+    init(alreadySelectedDates: [Date]) {
+        self.alreadySelectedDates = alreadySelectedDates
+    }
     
     mutating func manipulateDateClick(_ date: Date) {
         guard !selectedDates.contains(date) else {
@@ -140,6 +216,9 @@ protocol CalendarStyle: class {
     var scrollDirection: UICollectionViewScrollDirection { get }
     var cellStyles: CalendarCellStyles { get }
     var selectionManipulation: SelectionManipulation { get }
+    var alreadySelectedDates: [Date] { get set }
+    
+    init(alreadySelectedDates: [Date])
 }
 protocol CalendarCellStyles {
     var enabledStyle: CalendarCellStyle { get }
@@ -159,7 +238,12 @@ class UnavailabilityCalendarStyle: CalendarStyle {
     typealias SelectionManipulation = SingledCalendarSelection
     var scrollDirection: UICollectionViewScrollDirection = .horizontal
     var cellStyles: CalendarCellStyles = UnavailabilityCellStyles()
-    var selectionManipulation: SingledCalendarSelection = SingledCalendarSelection()
+    var alreadySelectedDates: [Date]
+    lazy var selectionManipulation: SingledCalendarSelection = SingledCalendarSelection(alreadySelectedDates: self.alreadySelectedDates)
+    
+    required init(alreadySelectedDates: [Date]) {
+        self.alreadySelectedDates = alreadySelectedDates
+    }
 }
 
 
@@ -173,5 +257,10 @@ class CheckInCalendarStyle: CalendarStyle {
     typealias SelectionManipulation = RangedCalendarSelection
     var scrollDirection: UICollectionViewScrollDirection = .horizontal
     var cellStyles: CalendarCellStyles = CheckInCellStyles()
-    var selectionManipulation: RangedCalendarSelection = RangedCalendarSelection()
+    var alreadySelectedDates: [Date]
+    lazy var selectionManipulation: RangedCalendarSelection = RangedCalendarSelection(alreadySelectedDates: self.alreadySelectedDates)
+    
+    required init(alreadySelectedDates: [Date]) {
+        self.alreadySelectedDates = alreadySelectedDates
+    }
 }
