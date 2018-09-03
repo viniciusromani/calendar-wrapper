@@ -170,11 +170,13 @@ extension RangedCalendarSelection {
                 return nil
         }
         
-        if currentDate.isAfter(date: selectedFirst) {
-            return .only(cellStyle: styles.enabledStyle)
+        if currentDate.isAfter(date: selectedFirst) &&
+            currentDate.isBefore(date: selectedLast) {
+                return .only(cellStyle: styles.enabledStyle)
         }
-        if currentDate.isBefore(date: selectedLast) {
-            return .only(cellStyle: styles.selectedStyle)
+        if currentDate.isBefore(date: selectedLast) ||
+            currentDate.isAfter(date: selectedFirst) {
+                return .only(cellStyle: styles.selectedStyle)
         }
         
         return nil
