@@ -56,7 +56,8 @@ class ViewController: UIViewController {
         self.unavailabilityCalendar.calendar.insertAlreadySelectedDates([Date() + 2.days,
                                                                          Date() + 3.days,
                                                                          Date() + 4.days,
-                                                                         Date() + 5.days])
+                                                                         Date() + 5.days,
+                                                                         Date() + 10.days])
         
     }
 }
